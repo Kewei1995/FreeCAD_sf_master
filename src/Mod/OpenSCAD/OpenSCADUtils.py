@@ -485,6 +485,7 @@ def process2D_ObjectsViaOpenSCADShape(ObjList,Operation,doc):
     dxfimports = ' '.join("import(file = \"%s\");" % \
         #filename \
         os.path.split(filename)[1] for filename in filenames)
+    print "callopenscadstring : " + '%s(){%s}' % (Operation,dxfimports) 
     tmpfilename = callopenscadstring('%s(){%s}' % (Operation,dxfimports),'dxf')
     from OpenSCAD2Dgeom import importDXFface
     # TBD: assure the given doc is active
@@ -545,6 +546,11 @@ def process3D_ObjectsViaOpenSCAD(doc,ObjList,Operation):
 def process_ObjectsViaOpenSCADShape(doc,children,name,maxmeshpoints=None):
     if all((not obj.Shape.isNull() and obj.Shape.Volume == 0) \
             for obj in children):
+        #KS temp debug export
+	x = 1
+	for obj in children :
+            obj.Shape.exportBrep("/tmp/debugFC"+str(x)+".brep")
+            x = x + 1
         return process2D_ObjectsViaOpenSCADShape(children,name,doc)
     elif all((not obj.Shape.isNull() and obj.Shape.Volume > 0) \
             for obj in children):

@@ -391,9 +391,21 @@ def p_offset_action(p):
         offset = float(p[3]['r'])
     if 'delta' in p[3] : 
         offset = float(p[3]['delta'])
-    if subobj[0].Shape.Volume == 0 :
+    #print subobj
+    #print subobj[0].Label
+    pl = subobj[0].PropertiesList
+    #print pl
+    if 'Shapes' in pl :
+       v = subobj[0].Shapes.Volume
+    if 'Base' in pl and 'Tool' in pl : 
+       v = subobj[0].Base.Shape.Volume + subobj[0].Tool.Shape.Volume
+    # if Base & Tool present then Shape may not be set properly
+    # e.g. Group() { polygon box }
+    elif 'Shape' in pl :
+       v = subobj[0].Shape.Volume
+    if v == 0 :
        newobj=doc.addObject("Part::Offset2D",'Offset2D')
-       newobj.Source = subobj[0] 
+       newobj.Source = subobj[0]
        newobj.Value = offset
        if 'r' in p[3] :
            newobj.Join = 0 
@@ -401,6 +413,7 @@ def p_offset_action(p):
            newobj.Join = 2 
     else :
        newobj=doc.addObject("Part::Offset",'offset')
+       # if 3D is Shape always valid ??
        newobj.Shape = subobj[0].Shape.makeOffset(offset)
     newobj.Document.recompute()
     subobj[0].ViewObject.hide()
@@ -501,6 +514,7 @@ def fuse(lst,name):
        myfuse = doc.addObject('Part::Fuse',name)
        myfuse.Base = lst[0]
        myfuse.Tool = lst[1]
+       myfuse.Shape = Part.makeCompound([myfuse.Base.Shape,myfuse.Tool.Shape])
        if gui:
            myfuse.Base.ViewObject.hide()
            myfuse.Tool.ViewObject.hide()
@@ -592,6 +606,7 @@ def process_rotate_extrude(obj):
 def p_rotate_extrude_action(p): 
     'rotate_extrude_action : rotate_extrude LPAREN keywordargument_list RPAREN OBRACE block_list EBRACE'
     if printverbose: print("Rotate Extrude")
+    print p[6]
     if (len(p[6]) > 1) :
         part = fuse(p[6],"Rotate Extrude Union")
     else :
