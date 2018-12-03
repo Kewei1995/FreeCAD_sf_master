@@ -28,6 +28,7 @@
 -I/usr/include
 -I/usr/include
 -I/usr/include/qt4
+-I/usr/include
 -I/usr/include/shiboken
 -I/usr/include/PySide
 -I/usr/include/PySide/QtCore
@@ -45,6 +46,7 @@
 -D_OCC64
 -DCMAKE_BUILD_TYPE="Debug"
 -DBUILD_ADDONMGR
+-DSPNAV_FOUND
 -DHAVE_SHIBOKEN
 -DHAVE_PYSIDE
 -o
